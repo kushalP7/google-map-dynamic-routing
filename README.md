@@ -23,8 +23,7 @@ $ npm install google-map-routing-package
   * Calculate and log the total distance and duration for each driver’s route.
 
 ## Docs & Community
-
-
+  * [GitHub Organization](https://github.com/kushalP7/google-map-routing-package.git) for Official Middleware & Modules
 
 ## Quick Start
 
