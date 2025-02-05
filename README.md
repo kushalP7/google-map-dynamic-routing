@@ -1,6 +1,6 @@
-# google-map-routing-package
+# google-map-dynamic-routing
 
-`google-map-routing-package` is a TypeScript-based service that simplifies the routing and transportation logistics for students and drivers using Google Maps. It dynamically generates routes based on student locations and vehicle capacity, ensuring the most efficient route assignments for drivers.
+`google-map-dynamic-routing` is a TypeScript-based service that simplifies the routing and transportation logistics for students and drivers using Google Maps. It dynamically generates routes based on student locations and vehicle capacity, ensuring the most efficient route assignments for drivers.
 
 ## Installation
 
@@ -11,7 +11,7 @@ Installation is done using the
 [`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
 ```console
-$ npm install google-map-routing-package
+$ npm install google-map-dynamic-routing
 ```
 
 ## Features
@@ -23,25 +23,25 @@ $ npm install google-map-routing-package
   * Calculate and log the total distance and duration for each driver’s route.
 
 ## Docs & Community
-  * [GitHub Organization](https://github.com/kushalP7/google-map-routing-package.git) for Official Middleware & Modules
+  * [GitHub Organization](https://github.com/kushalP7/google-map-dynamic-routing.git) for Official Middleware & Modules
 
 ## Quick Start
 
-To integrate the google-map-routing-package into your Angular application, follow the steps below.
+To integrate the google-map-dynamic-routing into your Angular application, follow the steps below.
 
 1. Install the Package
 First, install the package from npm:
 
 ```console
-$ npm install google-map-routing-package
+$ npm install google-map-dynamic-routing
 ```
 
 2. Import and Initialize in Angular Component
-In your Angular component, import the GoogleMapRoutingPackage and use it to set up the map and routing logic.
+In your Angular component, import the GoogleMapDynamicRouting and use it to set up the map and routing logic.
   
 ```ts
 import { AfterViewInit, ChangeDetectorRef, Component } from '@angular/core';
-import { GoogleMapRoutingPackage } from 'google-map-routing-package';
+import { Driver, GoogleMapDynamicRouting, School, Student } from 'google-map-dynamic-routing';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -50,8 +50,8 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./test1.component.scss']
 })
 export class Test1Component implements AfterViewInit {
-  gservice = new GoogleMapRoutingPackage();
-  drivers: any[] = [];
+  gservice = new GoogleMapDynamicRouting();
+  drivers: Driver[] = [];
   schoolId = 2;
 
   constructor(private cdr: ChangeDetectorRef) { }
@@ -62,13 +62,13 @@ export class Test1Component implements AfterViewInit {
     const mapZoom = 11;
 
     // Find school data from environment or use default
-    const schoolData = environment.students.find((student: any) => student.SchoolID === this.schoolId);
-    const schoolLocation = schoolData ? 
+    const schoolData = environment.students.find((student) => student.SchoolID === this.schoolId);
+    const schoolLocation:School = schoolData ? 
       { location: { lat: schoolData.SchoolLatitude, lng: schoolData.SchoolLongitude }, id: schoolData.SchoolID, name: schoolData.SchoolName } :
       { location: { lat: 51.24435222090445, lng: -0.19657615577176069 }, id: this.schoolId, name: "KP's School" };
 
     // Filter and map student data
-    const students = environment.students
+    const students:Student[] = environment.students
       .filter(s => s.SchoolID === this.schoolId)
       .map((s, index) => ({ location: { lat: s.Latitude, lng: s.Longitude }, name: s.FirstName, id: index + 1 }));
 

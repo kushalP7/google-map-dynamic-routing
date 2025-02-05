@@ -1,1 +1,1 @@
-export { GoogleMapRoutingPackage } from './google-map';
+export { GoogleMapDynamicRouting } from './google-map';

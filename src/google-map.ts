@@ -21,7 +21,7 @@ interface School {
     name: string;
 }
 
-export class GoogleMapRoutingPackage {
+export class GoogleMapDynamicRouting {
     private schoolLocation!: School;
     private zoomLevel!: number;
     private mapInstance!: google.maps.Map;

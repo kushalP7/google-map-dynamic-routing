@@ -1,4 +1,4 @@
-declare module 'google-map-routing-package' {
+declare module 'google-map-dynamic-routing' {
 
     export interface Location {
         lat: number;
@@ -36,7 +36,7 @@ declare module 'google-map-routing-package' {
         directions: google.maps.DirectionsResult;
     }
 
-    export class GoogleMapRoutingPackage {
+    export class GoogleMapDynamicRouting {
         constructor();
         setValues(schoolLocation: School, students: Student[], drivers: Driver[], busCapacity: number, mapZoom: number): void;
         initMap(mapElement: HTMLElement, schoolLocation: Location): void;

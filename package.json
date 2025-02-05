@@ -1,5 +1,5 @@
 {
-  "name": "google-map-routing-package",
+  "name": "google-map-dynamic-routing",
   "version": "1.0.0",
   "description": "A TypeScript-based package for routing and transportation logistics for students and drivers using Google Maps.",
   "main": "dist/index.js",
@@ -25,10 +25,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kushalP7/google-map-routing-package.git"
+    "url": "https://github.com/kushalP7/google-map-dynamic-routing.git"
   },
-  "homepage": "https://github.com/kushalP7/google-map-routing-package.git",
+  "homepage": "https://github.com/kushalP7/google-map-dynamic-routing.git",
   "bugs": {
-    "url": "https://github.com/kushalP7/google-map-routing-package.git/issues"
+    "url": "https://github.com/kushalP7/google-map-dynamic-routing.git/issues"
   }
 }
