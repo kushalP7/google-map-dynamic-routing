@@ -120,7 +120,7 @@ Example for index.html:
 6. Run Your Application
 Finally, run your Angular app using:
 
-````ts
+```ts
 $ ng serve
 ```
 
