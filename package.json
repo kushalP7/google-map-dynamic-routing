@@ -1,0 +1,17 @@
+{
+  "name": "google-map-routing-package",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "kushal prajapati",
+  "license": "ISC",
+  "dependencies": {
+    "@types/google.maps": "^3.58.1"
+  }
+}

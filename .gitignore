@@ -1,0 +1,7 @@
+/dist/
+/node_modules/
+package-lock.json
+/lib/
+.npmignore
+.DS_Store
+*.log
