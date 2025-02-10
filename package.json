@@ -1,6 +1,6 @@
 {
   "name": "google-map-dynamic-routing",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "A TypeScript-based package for routing and transportation logistics for students and drivers using Google Maps.",
   "main": "dist/index.js",
   "types": "index.d.ts",

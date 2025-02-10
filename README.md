@@ -40,8 +40,8 @@ $ npm install google-map-dynamic-routing
 In your Angular component, import the GoogleMapDynamicRouting and use it to set up the map and routing logic.
   
 ```ts
-import { AfterViewInit, ChangeDetectorRef, Component } from '@angular/core';
-import { Driver, GoogleMapDynamicRouting, School, Student } from 'google-map-dynamic-routing';
+import { AfterViewInit, Component } from '@angular/core';
+import { Assistant, Driver, GoogleMapDynamicRouting, School, Student } from 'google-map-dynamic-routing';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -52,14 +52,15 @@ import { environment } from 'src/environments/environment';
 export class Test1Component implements AfterViewInit {
   gservice = new GoogleMapDynamicRouting();
   drivers: Driver[] = [];
+  assistants: Assistant[] = [];
   schoolId = 2;
+  vehicleCapacity = 5;
+  mapZoom = 11;
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  constructor() { }
 
   ngAfterViewInit() {
     const mapElement = document.getElementById("map") as HTMLElement;
-    const busCapacity = 5;
-    const mapZoom = 11;
 
     // Find school data from environment or use default
     const schoolData = environment.students.find((student) => student.SchoolID === this.schoolId);
@@ -72,8 +73,23 @@ export class Test1Component implements AfterViewInit {
       .filter(s => s.SchoolID === this.schoolId)
       .map((s, index) => ({ location: { lat: s.Latitude, lng: s.Longitude }, name: s.FirstName, id: index + 1 }));
 
+    // add the assistant data here(You can make a api call or pass static data)
+    const requiredDrivers = Math.ceil(students.length / this.vehicleCapacity);
+    for (let i = 1; i <= requiredDrivers; i++) {
+      const assistant: Assistant = {
+        id: i,
+        name: `Assistant-${i}`,
+        location: {
+          lat: schoolLocation.location.lat + (Math.random() * 0.02 - 0.01),
+          lng: schoolLocation.location.lng + (Math.random() * 0.02 - 0.01)
+        }
+      };
+
+      this.assistants.push(assistant);
+    } 
+
     // Set values for the service
-    this.gservice.setValues(schoolLocation, students, [], busCapacity, mapZoom);
+    this.gservice.setValues(schoolLocation, students, [], this.assistants, this.vehicleCapacity, this.mapZoom);
 
     // Initialize the map
     this.gservice.initMap(mapElement, schoolLocation.location);
@@ -82,8 +98,6 @@ export class Test1Component implements AfterViewInit {
     this.gservice.createRoutesForDrivers();
     this.drivers = this.gservice.drivers;
 
-    // Trigger change detection to reflect updated data
-    this.cdr.detectChanges();
   }
 
   getRouteForDriver(driverIndex: number) {

@@ -23,6 +23,12 @@ declare module 'google-map-dynamic-routing' {
         name: string;
     }
 
+    export interface Assistant {
+        id: number;
+        name: string;
+        location: Location;
+    }
+
     export interface RouteOptions {
         origin: Location | string;
         destination: Location | string;
@@ -38,7 +44,7 @@ declare module 'google-map-dynamic-routing' {
 
     export class GoogleMapDynamicRouting {
         constructor();
-        setValues(schoolLocation: School, students: Student[], drivers: Driver[], busCapacity: number, mapZoom: number): void;
+        setValues(schoolLocation: School, students: Student[], drivers: Driver[], assistants: Assistant[], busCapacity: number, mapZoom: number): void;
         initMap(mapElement: HTMLElement, schoolLocation: Location): void;
         createRoutesForDrivers(): void;
         getRouteForDriver(driverIndex: number): void;

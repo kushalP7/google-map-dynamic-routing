@@ -3,22 +3,24 @@ interface Student {
     location: Location;
     name: string;
 }
-
 interface Driver {
     id: number;
     location?: Location,
     name?: string;
 }
-
 interface Location {
     lat: number;
     lng: number;
 }
-
 interface School {
     id: number;
     location: Location;
     name: string;
+}
+interface Assistant {
+    id: number;
+    name: string;
+    location: Location;
 }
 
 export class GoogleMapDynamicRouting {
@@ -30,6 +32,7 @@ export class GoogleMapDynamicRouting {
     private vehicleCapacity!: number;
     private students: Student[] = [];
     public drivers: Driver[] = [];
+    private assistants: Assistant[] = [];
 
     constructor() { }
 
@@ -43,12 +46,13 @@ export class GoogleMapDynamicRouting {
         }
     }
 
-    setValues(schoolLocation: School, students: Student[], drivers: Driver[], vehicleCapacity: number, mapZoom: number) {
+    setValues(schoolLocation: School, students: Student[], drivers: Driver[], assistants: Assistant[], vehicleCapacity: number, mapZoom: number) {
         this.schoolLocation = schoolLocation;
         this.students = students;
         this.drivers = drivers;
         this.vehicleCapacity = vehicleCapacity;
         this.zoomLevel = mapZoom;
+        this.assistants = assistants;
         this.createDrivers();
     }
 
@@ -61,73 +65,97 @@ export class GoogleMapDynamicRouting {
         this.mapInstance = new google.maps.Map(document.getElementById("map") as HTMLElement, mapOptions);
         this.directionsService = new google.maps.DirectionsService();
 
-        this.addSchoolMarker();
-        this.addStudentMarkers();
+        this.addSchoolMarkers();
+        this.addStudentMarker();
+        this.addAssistantMarkers();
     }
 
-    private addSchoolMarker() {
+    private addSchoolMarkers() {
         new google.maps.Marker({
             position: this.schoolLocation.location,
             map: this.mapInstance,
             label: {
-                text: this.schoolLocation.name,
-                color: '#2E8B57',
+                text: `${this.schoolLocation.name}`,
+                color: `#2E8B57`,
             },
+            icon: { url: `https://img.icons8.com/?size=60&id=RWH5eUW9Vr7f&format=png&color=000000` }
         });
     }
 
-    private addStudentMarkers() {
+    private addStudentMarker() {
         for (const student of this.students) {
             new google.maps.Marker({
                 position: student.location,
                 map: this.mapInstance,
-                label: `${student.name} - S${student.id}`,
+                label: `${student.name}--S${student.id}`,
+                icon: { url: `https://img.icons8.com/?size=25&id=LMhH2eAC6LY8&format=png&color=000000` }
             });
         }
     }
 
+    private addAssistantMarkers() {
+        for (const assistant of this.assistants) {
+            new google.maps.Marker({
+                position: assistant.location,
+                map: this.mapInstance,
+                label: `Assistant ${assistant.id}`,
+                icon: { url: 'https://img.icons8.com/?size=40&id=21832&format=png&color=000000' }
+            });
+        }
+    }
 
     createRoutesForDrivers() {
-        const availablevehicals = this.drivers.length;
-        const vehicalRoutes = [];
-        const vehicalLocations = Array(availablevehicals).fill(this.schoolLocation.location);
-        const vehicalsWithCapacity = Array(availablevehicals).fill(this.vehicleCapacity);
+        const availablevehicles = this.drivers.length;
+        const vehicleRoutes = [];
+        const vehicleLocations = Array(availablevehicles).fill(this.schoolLocation.location);
+        const vehiclesWithCapacity = Array(availablevehicles).fill(this.vehicleCapacity);
         let remainingStudents = [...this.students];
+        let availableAssistants = [...this.assistants];
 
-        for (let i = 0; i < availablevehicals && remainingStudents.length > 0; i++) {
-            const vehicalRoute = [];
-            let vehicalCapacityRemaining = vehicalsWithCapacity[i];
-            let currentVehicalLocation = vehicalLocations[i];
+        for (let i = 0; i < availablevehicles && remainingStudents.length > 0; i++) {
+            const vehicleRoute = [];
+            let vehicleCapacityRemaining = vehiclesWithCapacity[i];
+            let currentvehicleLocation = vehicleLocations[i];
+
+            const nearestAssistant = this.findNearestAssistant(currentvehicleLocation, availableAssistants);
+            if (nearestAssistant) {
+                this.drivers[i].location = nearestAssistant.location;
+                vehicleRoute.push({ id: `A${nearestAssistant.id}`, location: nearestAssistant.location, name: `Assistant ${nearestAssistant.name}` });
+                currentvehicleLocation = nearestAssistant.location;
+                availableAssistants = availableAssistants.filter(assistant => assistant !== nearestAssistant);
+            }
 
             const farthestStudent = this.findFarthestStudent(this.schoolLocation.location, remainingStudents);
             if (farthestStudent) {
-                vehicalRoute.push(farthestStudent);
-                currentVehicalLocation = farthestStudent.location;
+                vehicleRoute.push(farthestStudent);
+                currentvehicleLocation = farthestStudent.location;
                 remainingStudents = remainingStudents.filter(student => student !== farthestStudent);
-                vehicalCapacityRemaining--;
+                vehicleCapacityRemaining--;
             }
 
             let studentIndex = 0;
-            while (vehicalCapacityRemaining > 0 && remainingStudents.length > 0 && studentIndex < remainingStudents.length) {
-                const nearestStudent = this.findNearestStudent(currentVehicalLocation, remainingStudents);
-                vehicalRoute.push(nearestStudent);
-                currentVehicalLocation = nearestStudent?.location;
+            while (vehicleCapacityRemaining > 0 && remainingStudents.length > 0 && studentIndex < remainingStudents.length) {
+                const nearestStudent = this.findNearestStudent(currentvehicleLocation, remainingStudents);
+                vehicleRoute.push(nearestStudent);
+                currentvehicleLocation = nearestStudent?.location;
                 remainingStudents = remainingStudents.filter(student => student !== nearestStudent);
-                vehicalCapacityRemaining--;
+                vehicleCapacityRemaining--;
                 studentIndex++;
             }
 
-            vehicalLocations[i] = currentVehicalLocation;
-            vehicalsWithCapacity[i] = vehicalCapacityRemaining;
-            vehicalRoutes.push(vehicalRoute);
+            vehicleLocations[i] = currentvehicleLocation;
+            vehiclesWithCapacity[i] = vehicleCapacityRemaining;
+            vehicleRoutes.push(vehicleRoute);
         }
 
         if (remainingStudents.length > 0) {
-            this.assignRemainingStudentsToNextVehicals(vehicalRoutes, remainingStudents, vehicalLocations, vehicalsWithCapacity);
+            this.assignRemainingStudentsToNextVehicals(vehicleRoutes, remainingStudents, vehicleLocations, vehiclesWithCapacity);
         }
+        for (let index = 0; index < vehicleRoutes.length; index++) {
+            this.createvehicalRoute(index, vehicleRoutes[index]);
 
-        for (let index = 0; index < vehicalRoutes.length; index++) {
-            this.createvehicalRoute(index, vehicalRoutes[index]);
+            localStorage.setItem(`Driver-${index + 1}--> Route`, JSON.stringify(vehicleRoutes[index]));
+            localStorage.setItem(`Driver-${index + 1}--> Dropoff`, JSON.stringify([...vehicleRoutes[index]].reverse()));
         }
 
     }
@@ -167,6 +195,13 @@ export class GoogleMapDynamicRouting {
         );
     }
 
+    private findNearestAssistant(currentLocation: Location, assistants: Assistant[]) {
+        if (assistants.length === 0) return;
+        return assistants.reduce((nearest, assistant) =>
+            this.getDistance(currentLocation, assistant.location!) <
+                this.getDistance(currentLocation, nearest.location!) ? assistant : nearest);
+    }
+
     private getDistance(pointA: Location, pointB: Location): number {
         const R = 6371; // Radius of Earth in kilometers
         const dLat = (pointB.lat - pointA.lat) * (Math.PI / 180);
@@ -180,7 +215,6 @@ export class GoogleMapDynamicRouting {
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
-
 
     private createvehicalRoute(driverIndex: number, route: any[]) {
         const waypoints = route.map((student) => ({
