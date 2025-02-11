@@ -74,8 +74,8 @@ export class Test1Component implements AfterViewInit {
       .map((s, index) => ({ location: { lat: s.Latitude, lng: s.Longitude }, name: s.FirstName, id: index + 1 }));
 
     // add the assistant data here(You can make a api call or pass static data)
-    const requiredDrivers = Math.ceil(students.length / this.vehicleCapacity);
-    for (let i = 1; i <= requiredDrivers; i++) {
+    const requiredAssistant = Math.ceil(students.length / this.vehicleCapacity);
+    for (let i = 1; i <= requiredAssistant; i++) {
       const assistant: Assistant = {
         id: i,
         name: `Assistant-${i}`,

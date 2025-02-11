@@ -217,8 +217,8 @@ export class GoogleMapDynamicRouting {
     }
 
     private createvehicalRoute(driverIndex: number, route: any[]) {
-        const waypoints = route.map((student) => ({
-            location: new google.maps.LatLng(student.location.lat, student.location.lng),
+        const waypoints = route.map((stop) => ({
+            location: new google.maps.LatLng(stop.location.lat, stop.location.lng),
             stopover: true,
         }));
 
